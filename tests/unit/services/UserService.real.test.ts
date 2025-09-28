@@ -20,7 +20,10 @@ describe("UserService - Real Tests (No Mocks)", () => {
         role: UserRole.USER,
       };
 
+      // Executar o service REAL
       const result = await UserService.createUser(userData);
+
+      // Verificar se o usuário foi criado
       expect(result.email).toBe(userData.email);
       expect(result.role).toBe(userData.role);
       expect(result.id).toBeDefined();
@@ -33,14 +36,20 @@ describe("UserService - Real Tests (No Mocks)", () => {
         role: UserRole.USER,
       };
 
+      // Criar o primeiro usuário
       const firstUser = await UserService.createUser(userData);
       expect(firstUser).toBeDefined();
 
+      // Aguardar um pouco para garantir que o primeiro usuário foi salvo
       await new Promise((resolve) => setTimeout(resolve, 200));
+
+      // Tentar criar o segundo usuário com o mesmo email
       try {
         await UserService.createUser(userData);
+        // Se chegou aqui, o teste falhou
         expect(true).toBe(false);
       } catch (error) {
+        // Esperado que lance erro
         expect(error).toBeDefined();
       }
     });
@@ -48,6 +57,7 @@ describe("UserService - Real Tests (No Mocks)", () => {
 
   describe("getUserById", () => {
     it("should return user by id", async () => {
+      // Primeiro criar um usuário
       const userData = {
         email: "getuser@example.com",
         password: "password123",
@@ -55,25 +65,27 @@ describe("UserService - Real Tests (No Mocks)", () => {
       };
       const createdUser = await UserService.createUser(userData);
 
+      // Executar o service REAL
       const result = await UserService.getUserById(createdUser.id);
 
- o usuário foi encontrado
+      // Verificar se o usuário foi encontrado
       expect(result?.id).toBe(createdUser.id);
       expect(result?.email).toBe(userData.email);
       expect(result?.role).toBe(userData.role);
     });
 
     it("should return null when user not found", async () => {
- com ID inexistente
+      // Executar o service REAL com ID inexistente
       const result = await UserService.getUserById(99999);
 
- retorna null
+      // Verificar se retorna null
       expect(result).toBeNull();
     });
   });
 
   describe("getUserByEmail", () => {
     it("should return user by email", async () => {
+      // Primeiro criar um usuário
       const userData = {
         email: "getbyemail@example.com",
         password: "password123",
@@ -81,26 +93,28 @@ describe("UserService - Real Tests (No Mocks)", () => {
       };
       await UserService.createUser(userData);
 
+      // Executar o service REAL
       const result = await UserService.getUserByEmail(userData.email);
 
- o usuário foi encontrado
+      // Verificar se o usuário foi encontrado
       expect(result?.email).toBe(userData.email);
       expect(result?.id).toBeDefined();
     });
 
     it("should return null when user not found by email", async () => {
- com email inexistente
+      // Executar o service REAL com email inexistente
       const result = await UserService.getUserByEmail(
         "nonexistent@example.com"
       );
 
- retorna null
+      // Verificar se retorna null
       expect(result).toBeNull();
     });
   });
 
   describe("updateUser", () => {
     it("should update user successfully", async () => {
+      // Primeiro criar um usuário
       const userData = {
         email: "updateuser@example.com",
         password: "password123",
@@ -113,9 +127,10 @@ describe("UserService - Real Tests (No Mocks)", () => {
         role: UserRole.ADMIN,
       };
 
+      // Executar o service REAL
       const result = await UserService.updateUser(createdUser.id, updateData);
 
- o usuário foi atualizado
+      // Verificar se o usuário foi atualizado
       expect(result?.id).toBe(createdUser.id);
       expect(result?.email).toBe(updateData.email);
       expect(result?.role).toBe(updateData.role);
@@ -124,16 +139,17 @@ describe("UserService - Real Tests (No Mocks)", () => {
     it("should return null when user not found for update", async () => {
       const updateData = { email: "test@example.com" };
 
- com ID inexistente
+      // Executar o service REAL com ID inexistente
       const result = await UserService.updateUser(99999, updateData);
 
- retorna null
+      // Verificar se retorna null
       expect(result).toBeNull();
     });
   });
 
   describe("deleteUser", () => {
     it("should delete user successfully", async () => {
+      // Primeiro criar um usuário
       const userData = {
         email: "deleteuser@example.com",
         password: "password123",
@@ -141,21 +157,22 @@ describe("UserService - Real Tests (No Mocks)", () => {
       };
       const createdUser = await UserService.createUser(userData);
 
+      // Executar o service REAL
       const result = await UserService.deleteUser(createdUser.id);
 
- o usuário foi deletado
+      // Verificar se o usuário foi deletado
       expect(result).toBe(true);
 
- o usuário não existe mais
+      // Verificar se o usuário não existe mais
       const deletedUser = await UserService.getUserById(createdUser.id);
       expect(deletedUser).toBeNull();
     });
 
     it("should return false when user not found for delete", async () => {
- com ID inexistente
+      // Executar o service REAL com ID inexistente
       const result = await UserService.deleteUser(99999);
 
- retorna false
+      // Verificar se retorna false
       expect(result).toBe(false);
     });
   });
@@ -180,12 +197,14 @@ describe("UserService - Real Tests (No Mocks)", () => {
         await UserService.createUser(userData);
       }
 
- os usuários foram salvos
+      // Aguardar um pouco para garantir que os usuários foram salvos
       await new Promise((resolve) => setTimeout(resolve, 500));
 
+      // Executar o service REAL
       const result = await UserService.getAllUsers(1, 10);
 
- os usuários foram retornados
+      // Verificar se os usuários foram retornados
+      // Filtrar apenas os usuários que criamos neste teste
       const testUsers = result.users.filter(
         (user) =>
           user.email === "user1@example.com" ||
@@ -197,10 +216,10 @@ describe("UserService - Real Tests (No Mocks)", () => {
     });
 
     it("should handle pagination correctly", async () => {
- com página 2, limite 5
+      // Executar o service REAL com página 2, limite 5
       const result = await UserService.getAllUsers(2, 5);
 
- a paginação está correta
+      // Verificar se a paginação está correta
       expect(result.currentPage).toBe(2);
       expect(result.users.length).toBeLessThanOrEqual(5);
     });

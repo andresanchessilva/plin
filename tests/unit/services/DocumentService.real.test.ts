@@ -21,14 +21,21 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
       role: UserRole.USER,
     });
 
+    // Aguardar um pouco para garantir que o usuário foi criado
     await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Criar cliente de teste com email único
+    // Não usar created_by para evitar problemas com foreign key constraints
     testClient = await Client.create({
       nome: "Cliente Teste",
       email: `clienteteste${timestamp}@example.com`,
       created_by: undefined,
     });
 
+    // Aguardar um pouco para garantir que o cliente foi criado
     await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Verificar se o cliente foi realmente criado
     const verifyClient = await Client.findByPk(testClient.id);
     if (!verifyClient) {
       throw new Error("Cliente não foi criado corretamente no setup");
@@ -48,13 +55,16 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
         titulo: "Documento Teste",
         conteudo: "Conteúdo do documento de teste",
         client_id: testClient.id,
-        uploaded_by: undefined,
+        uploaded_by: undefined, // Não usar uploaded_by para evitar problemas com foreign key constraints
         data_processamento: new Date(),
         type: "pdf" as const,
         meta_data: { pages: 5, author: "Sistema" },
       };
 
+      // Executar o service REAL
       const result = await DocumentService.create(documentData);
+
+      // Verificar se o documento foi criado
       expect(result.data?.titulo).toBe(documentData.titulo);
       expect(result.data?.conteudo).toBe(documentData.conteudo);
       expect(result.data?.client_id).toBe(documentData.client_id);
@@ -70,6 +80,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
         uploaded_by: undefined,
       };
 
+      // Executar e verificar se o erro é lançado
       await expect(
         DocumentService.create(invalidData as any)
       ).rejects.toThrow();
@@ -78,6 +89,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
 
   describe("getById", () => {
     it("should return document by id", async () => {
+      // Primeiro criar um documento
       const documentData = {
         titulo: "Documento GetById",
         conteudo: "Conteúdo do documento",
@@ -89,16 +101,17 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
       };
       const createdDocument = await DocumentService.create(documentData);
 
+      // Executar o service REAL
       const result = await DocumentService.getById(createdDocument.data?.id!);
 
- encontrado
+      // Verificar se o documento foi encontrado
       expect(result.data.id).toBe(createdDocument.data?.id);
       expect(result.data.titulo).toBe(documentData.titulo);
       expect(result.data.conteudo).toBe(documentData.conteudo);
     });
 
     it("should return error when document not found", async () => {
- com ID inexistente
+      // Executar o service REAL com ID inexistente
       await expect(DocumentService.getById(99999)).rejects.toThrow(
         "Documento não encontrado"
       );
@@ -133,6 +146,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
         await DocumentService.create(docData);
       }
 
+      // Executar o service REAL
       const result = await DocumentService.getByClient(testClient.id, 1, 10);
 
       // Verificar se os documentos foram retornados
@@ -141,7 +155,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
     });
 
     it("should handle empty results for client", async () => {
- com cliente sem documentos
+      // Executar o service REAL com cliente sem documentos
       const result = await DocumentService.getByClient(testClient.id, 1, 10);
 
       // Verificar se retorna resultado vazio
@@ -175,9 +189,10 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
       };
       await DocumentService.create(documentData);
 
+      // Executar o service REAL
       const result = await DocumentService.getByUser(specificUser.id, 1, 10);
 
- retornado
+      // Verificar se o documento foi retornado
       expect(result.data.length).toBe(1);
       expect(result.count).toBe(1);
       expect(result.data[0].uploaded_by).toBe(specificUser.id);
@@ -186,6 +201,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
 
   describe("update", () => {
     it("should update document successfully", async () => {
+      // Primeiro criar um documento
       const documentData = {
         titulo: "Documento Original",
         conteudo: "Conteúdo original",
@@ -202,19 +218,20 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
         conteudo: "Conteúdo atualizado",
       };
 
+      // Executar o service REAL
       const result = await DocumentService.update(
         createdDocument.data?.id!,
         updateData
       );
 
- atualizado
+      // Verificar se o documento foi atualizado
       expect(result.message).toBe("Documento atualizado com sucesso");
     });
 
     it("should return error when document not found for update", async () => {
       const updateData = { titulo: "Test" };
 
- com ID inexistente
+      // Executar o service REAL com ID inexistente
       await expect(DocumentService.update(99999, updateData)).rejects.toThrow(
         "Documento não encontrado"
       );
@@ -223,6 +240,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
 
   describe("delete", () => {
     it("should perform soft delete successfully", async () => {
+      // Primeiro criar um documento
       const documentData = {
         titulo: "Documento Delete",
         conteudo: "Conteúdo para deletar",
@@ -234,9 +252,10 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
       };
       const createdDocument = await DocumentService.create(documentData);
 
+      // Executar o service REAL
       const result = await DocumentService.delete(createdDocument.data?.id!);
 
- deletado (soft delete)
+      // Verificar se o documento foi deletado (soft delete)
       expect(result.message).toBe("Documento deletado com sucesso");
 
       // Verificar se o documento não pode ser encontrado (soft delete)
@@ -246,7 +265,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
     });
 
     it("should return error when document not found for delete", async () => {
- com ID inexistente
+      // Executar o service REAL com ID inexistente
       await expect(DocumentService.delete(99999)).rejects.toThrow(
         "Documento não encontrado"
       );
@@ -281,6 +300,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
         await DocumentService.create(docData);
       }
 
+      // Executar o service REAL
       const result = await DocumentService.getAll(1, 10);
 
       // Verificar se os documentos foram retornados
@@ -289,7 +309,7 @@ describe("DocumentService - Real Tests (No Mocks)", () => {
     });
 
     it("should handle pagination correctly", async () => {
- com página 2, limite 5
+      // Executar o service REAL com página 2, limite 5
       const result = await DocumentService.getAll(2, 5);
 
       // Verificar se a paginação está funcionando

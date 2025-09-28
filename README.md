@@ -288,6 +288,6 @@ docker-compose down     # Parar containers
 - **Validação**: Dados são validados antes de serem salvos
 - **Logs**: Erros são logados no console
 
-## 👨‍💻 Autor
+---
 
-**André Gustavo**
+Feito com ❤️ por **André Gustavo**

@@ -257,6 +257,18 @@ npm test -- --testNamePattern="should create a document"
 npm test -- --testPathPatterns="DocumentService.real.test.ts"
 ```
 
+### ⚠️ Importante: Reset do Banco de Testes
+
+**Os testes reais precisam de um banco limpo para funcionar corretamente.**
+
+```bash
+# SEMPRE execute antes de rodar os testes
+npm run test:reset
+
+# Depois execute os testes
+npm test
+```
+
 ## 🐳 Docker
 
 ### Banco de dados

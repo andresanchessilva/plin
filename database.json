@@ -1,0 +1,29 @@
+{
+  "dev": {
+    "driver": "pg",
+    "user": "plin_user",
+    "password": "plin_password",
+    "host": "localhost",
+    "database": "plin_db",
+    "port": 5432,
+    "schema": "public"
+  },
+  "test": {
+    "driver": "pg",
+    "user": "plin_user",
+    "password": "plin_password",
+    "host": "localhost",
+    "database": "plin_test_db",
+    "port": 5432,
+    "schema": "public"
+  },
+  "prod": {
+    "driver": "pg",
+    "user": { "ENV": "DB_USER" },
+    "password": { "ENV": "DB_PASSWORD" },
+    "host": { "ENV": "DB_HOST" },
+    "database": { "ENV": "DB_NAME" },
+    "port": { "ENV": "DB_PORT" },
+    "schema": "public"
+  }
+}

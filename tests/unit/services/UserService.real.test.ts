@@ -3,12 +3,18 @@ import { UserRole } from "../../../src/models/User";
 import User from "../../../src/models/User";
 
 describe("UserService - Real Tests (No Mocks)", () => {
+  // NENHUM MOCK - Testa o service real com banco de dados real
+
+  // Cleanup antes e após cada teste
   beforeEach(async () => {
+    // Limpar dados antes de cada teste para evitar conflitos
     await User.destroy({ where: {}, force: true });
+    // Aguardar um pouco para garantir que a limpeza foi concluída
     await new Promise((resolve) => setTimeout(resolve, 300));
   });
 
   afterEach(async () => {
+    // Limpar dados após cada teste
     await User.destroy({ where: {}, force: true });
   });
 

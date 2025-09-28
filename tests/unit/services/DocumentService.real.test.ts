@@ -4,16 +4,23 @@ import Client from "../../../src/models/Client";
 import User, { UserRole } from "../../../src/models/User";
 
 describe("DocumentService - Real Tests (No Mocks)", () => {
+  // NENHUM MOCK - Testa o service real com banco de dados real
 
   let testClient: any;
   let testUser: any;
 
+  // Setup antes de cada teste
   beforeEach(async () => {
+    // Limpar dados antes de cada teste para evitar conflitos
+    // Ordem importante: primeiro documentos, depois clientes, depois usuários
     await Document.destroy({ where: {}, force: true });
     await Client.destroy({ where: {}, force: true });
     await User.destroy({ where: {}, force: true });
 
+    // Aguardar um pouco para garantir que a limpeza foi concluída
     await new Promise((resolve) => setTimeout(resolve, 300));
+
+    // Criar usuário de teste primeiro com email único
     const timestamp = Date.now();
     testUser = await User.create({
       email: `userteste${timestamp}@example.com`,
